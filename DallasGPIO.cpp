@@ -122,22 +122,56 @@ bool DallasGPIO::setStateByAddress(const uint8_t* deviceAddress, uint8_t gpio0, 
     static uint8_t stage = 0;
     static uint8_t result = 0;
 
-    uint8_t state = 0xFF;
-    if (gpio0) state &= !0x01;
-    if (gpio1) state &= !0x02;
-
-    if (stage == 0) { _wire->reset(); lastError = false; stage++; if (polling) return false; }
-    if (stage == 1) { if (_wire->select(deviceAddress,true)) stage++; if (polling) return false; }
-    if (stage == 2) { _wire->write(DS2413_ACCESS_WRITE); stage++; if (polling) return false; }
-    if (stage == 3) { _wire->write(state); stage++; if (polling) return false; }
-    if (stage == 4) { _wire->write(~state); stage++; if (polling) return false; }          // invert data and send again    
-    if (stage == 5) { result = _wire->read(); stage++; if (polling) return false; } // 0xAA=success, 0xFF=failure
-    if (stage == 6) {
-		if (result == DS2413_ACK_SUCCESS) _wire->read(); else lastError=true; // read the status byte
+    if (stage == 0) {
+		_wire->reset();
+//		Serial.print("r,");
+		lastError = false;
+		stage++;
+		if (polling) return false;
+	}
+    if (stage == 1) {
+		if (_wire->select(deviceAddress,true)) stage++;
+//		if (stage == 2) Serial.print("s,");
+		if (polling) return false;
+	}
+    if (stage == 2) {
+		_wire->write(DS2413_ACCESS_WRITE);
+//		if (stage == 2) Serial.print("w,");
+		stage++;
+		if (polling) return false;
+	}
+    if (stage == 3) {
+		uint8_t state = 0xFF; if (gpio0) state &= ~0x01; if (gpio1) state &= ~0x02;
+		_wire->write(state);
+//		Serial.print("*");
+		stage++;
+		if (polling) return false;
+	}
+    if (stage == 4) { // invert data and send again
+		uint8_t state = 0xFF; if (gpio0) state &= ~0x01; if (gpio1) state &= ~0x02;
+		_wire->write(~state);
+//		Serial.print("!,");
+		stage++;
+		if (polling) return false;
+	}       
+    if (stage == 5) { // read the status byte 0xAA=success, 0xFF=failure
+		result = _wire->read();
+//		Serial.print("r1:"); Serial.print(result,HEX); Serial.print(",");
+		stage++;
+		if (polling) return false;
+	}
+    if (stage == 6) { // check the status byte
+		if (result == DS2413_ACK_SUCCESS) result=_wire->read(); else lastError=true;
+//		Serial.print("r2:"); Serial.print(result,HEX); Serial.print(",");
 		stage++;
 		if (polling) return false;
     }
-    if (stage == 7) { _wire->reset(); stage++; if (polling) return false; }
+    if (stage == 7) {
+		_wire->reset();
+//		Serial.print("r");
+		stage++;
+		if (polling) return false;
+	}
 
     if (stage == 8) stage = 0;
 
