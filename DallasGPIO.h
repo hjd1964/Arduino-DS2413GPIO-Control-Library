@@ -57,13 +57,13 @@ public:
 	bool getAddress(uint8_t*, uint8_t);
 
 	// set GPIO0 and GPIO1 HIGH or LOW by index
-	bool setStateByIndex(uint8_t deviceIndex, uint8_t gpio0, uint8_t gpio1);
+	bool setState(uint8_t deviceIndex, uint8_t gpio0, uint8_t gpio1);
 
 	// set GPIO0 and GPIO1 HIGH or LOW by address
 	bool setStateByAddress(const uint8_t* deviceAddress, uint8_t gpio0, uint8_t gpio1, bool polling = false);
 
 	// get GPIO0 and GPIO1 HIGH or LOW by index
-    bool getStateByIndex(uint8_t deviceIndex, uint8_t* gpio0, uint8_t* gpio1);
+    bool getState(uint8_t deviceIndex, uint8_t* gpio0, uint8_t* gpio1);
 
     // get GPIO0 and GPIO1 HIGH or LOW by address
     bool getStateByAddress(const uint8_t* deviceAddress, uint8_t* gpio0, uint8_t* gpio1, bool polling = false);
@@ -76,18 +76,6 @@ public:
 
 	// read device's power requirements
 	bool readPowerSupply(const uint8_t* deviceAddress = nullptr);
-
-    // set GPIO0 and GPIO1 HIGH or LOW by index
-    bool setStateByIndex(uint8_t deviceIndex, uint8_t gpio0, uint8_t gpio1);
-    
-    // set GPIO0 and GPIO1 HIGH or LOW by address
-	bool setStateByAddress(const uint8_t* deviceAddress, uint8_t gpio0, uint8_t gpio1);
-
-    // get GPIO0 and GPIO1 state by index
-    bool getStateByIndex(uint8_t deviceIndex, uint8_t* gpio0, uint8_t* gpio1);
-    
-    // get GPIO0 and GPIO1 state by address
-	bool getStateByAddress(const uint8_t* deviceAddress, uint8_t* gpio0, uint8_t* gpio1);
 
 	// returns true if the bus requires parasite power
 	bool isParasitePowerMode(void);

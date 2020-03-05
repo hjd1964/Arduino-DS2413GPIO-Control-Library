@@ -39,18 +39,14 @@ void DallasGPIO::setPullupPin(uint8_t _pullupPin) {
 }
 
 void DallasGPIO::setOneWire(OneWire* _oneWire) {
-
     _wire = _oneWire;
     devices = 0;
     ds2413Count = 0;
     parasite = false;
-    waitForConversion = true;
-    checkForConversion = true;
 }
 
 // initialise the bus
 void DallasGPIO::begin(void) {
-
     DeviceAddress deviceAddress;
 
     _wire->reset_search();
@@ -63,8 +59,6 @@ void DallasGPIO::begin(void) {
 
             if (!parasite && readPowerSupply(deviceAddress))
                 parasite = true;
-
-            bitResolution = max(bitResolution, getResolution(deviceAddress));
 
             devices++;
             if (validFamily(deviceAddress)) {
@@ -88,7 +82,7 @@ bool DallasGPIO::validAddress(const uint8_t* deviceAddress) {
     return (_wire->crc8(deviceAddress, 7) == deviceAddress[7]);
 }
 
-bool DallasTemperature::validFamily(const uint8_t* deviceAddress) {
+bool DallasGPIO::validFamily(const uint8_t* deviceAddress) {
     switch (deviceAddress[0]) {
     case DS2413MODEL:
         return true;
@@ -115,7 +109,7 @@ bool DallasGPIO::getAddress(uint8_t* deviceAddress, uint8_t index) {
 }
 
 // set GPIO0 and GPIO1 HIGH or LOW by index
-bool DallasGPIO::setStateByIndex(uint8_t deviceIndex, uint8_t gpio0, uint8_t gpio1) {
+bool DallasGPIO::setState(uint8_t deviceIndex, uint8_t gpio0, uint8_t gpio1) {
 
     DeviceAddress deviceAddress;
     getAddress(deviceAddress, deviceIndex);
@@ -132,18 +126,18 @@ bool DallasGPIO::setStateByAddress(const uint8_t* deviceAddress, uint8_t gpio0, 
     if (gpio0) state &= !0x01;
     if (gpio1) state &= !0x02;
 
-    if (stage == 0) { _wire->reset(); lastError = false; stage++; if (polling) return; }
-    if (stage == 1) { if (_wire->select(address,true)) stage++; if (polling) return; }
-    if (stage == 2) { write(DS2413_ACCESS_WRITE); stage++; if (polling) return; }
-    if (stage == 3) { write(state); stage++; if (polling) return; }
-    if (stage == 4) { write(~state); stage++; if (polling) return; }          // invert data and send again    
-    if (stage == 5) { result = _wire->read(); stage++; if (polling) return; } // 0xAA=success, 0xFF=failure
+    if (stage == 0) { _wire->reset(); lastError = false; stage++; if (polling) return false; }
+    if (stage == 1) { if (_wire->select(deviceAddress,true)) stage++; if (polling) return false; }
+    if (stage == 2) { _wire->write(DS2413_ACCESS_WRITE); stage++; if (polling) return false; }
+    if (stage == 3) { _wire->write(state); stage++; if (polling) return false; }
+    if (stage == 4) { _wire->write(~state); stage++; if (polling) return false; }          // invert data and send again    
+    if (stage == 5) { result = _wire->read(); stage++; if (polling) return false; } // 0xAA=success, 0xFF=failure
     if (stage == 6) {
 		if (result == DS2413_ACK_SUCCESS) _wire->read(); else lastError=true; // read the status byte
 		stage++;
-		if (polling) return;
+		if (polling) return false;
     }
-    if (stage == 7) { _wire->reset(); stage++; if (polling) return; }
+    if (stage == 7) { _wire->reset(); stage++; if (polling) return false; }
 
     if (stage == 8) stage = 0;
 
@@ -152,7 +146,7 @@ bool DallasGPIO::setStateByAddress(const uint8_t* deviceAddress, uint8_t gpio0, 
 
 
 // get GPIO0 and GPIO1 HIGH or LOW by index
-bool DallasGPIO::getStateByIndex(uint8_t deviceIndex, uint8_t* gpio0, uint8_t* gpio1) {
+bool DallasGPIO::getState(uint8_t deviceIndex, uint8_t* gpio0, uint8_t* gpio1) {
 
     DeviceAddress deviceAddress;
     getAddress(deviceAddress, deviceIndex);
@@ -165,20 +159,19 @@ bool DallasGPIO::getStateByAddress(const uint8_t* deviceAddress, uint8_t* gpio0,
     static uint8_t stage = 0;
     static uint8_t result = 0;
 
-    switch (stage) {
-	if (stage == 0) { _wire->reset(); lastError=false; stage++; if (polling) return; }
-	if (stage == 1) { if (_wire->select(address,polling)) stage++; if (polling) return; }
-	if (stage == 2) { _wire->write(DS2413_ACCESS_READ); stage++; if (polling) return; }
-	if (stage == 3) { result = oneWire.read(); stage++; if (polling) return; }
-	if (stage == 4) { _wire->reset(); stage++; if (polling) return; }
+	if (stage == 0) { _wire->reset(); lastError=false; stage++; if (polling) return false; }
+	if (stage == 1) { if (_wire->select(deviceAddress,polling)) stage++; if (polling) return false; }
+	if (stage == 2) { _wire->write(DS2413_ACCESS_READ); stage++; if (polling) return false; }
+	if (stage == 3) { result = _wire->read(); stage++; if (polling) return false; }
+	if (stage == 4) { _wire->reset(); stage++; if (polling) return false; }
 	if (stage == 5) {
 		// check inverted nibble
-		if ((!result & 0x0F) == (result >> 4)) {
+		if (((!result) & 0x0F) == (result >> 4)) {
 		  if (result & 1) *gpio0=LOW; else *gpio0=HIGH;
 		  if (result & 2) *gpio1=LOW; else *gpio1=HIGH;
 		} else lastError=true;
 		stage++;
-		if (polling) return;
+		if (polling) return false;
 	}
 
     if (stage == 6) stage = 0;
