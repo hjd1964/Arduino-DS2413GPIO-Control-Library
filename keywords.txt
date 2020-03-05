@@ -1,0 +1,33 @@
+#######################################
+# Syntax Coloring Map For DallasTemperature
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+DallasTemperature	KEYWORD1
+OneWire	KEYWORD1
+AlarmHandler	KEYWORD1
+DeviceAddress	KEYWORD1
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+isParasitePowerMode	KEYWORD2
+begin	KEYWORD2
+getDeviceCount	KEYWORD2
+getAddress	KEYWORD2
+validAddress	KEYWORD2
+isConnected	KEYWORD2
+readPowerSupply	KEYWORD2
+getDS2413Count  KEYWORD2
+getStateByIndex KEYWORD2
+getStateByAddress KEYWORD2
+setStateByIndex KEYWORD2
+setStateByAddress KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
