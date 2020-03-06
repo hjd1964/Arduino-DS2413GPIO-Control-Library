@@ -1,11 +1,11 @@
 #######################################
-# Syntax Coloring Map For DallasTemperature
+# Syntax Coloring Map For DallasGPIO
 #######################################
 
 #######################################
 # Datatypes (KEYWORD1)
 #######################################
-DallasTemperature	KEYWORD1
+DallasGPIO	KEYWORD1
 OneWire	KEYWORD1
 AlarmHandler	KEYWORD1
 DeviceAddress	KEYWORD1
@@ -21,11 +21,11 @@ getAddress	KEYWORD2
 validAddress	KEYWORD2
 isConnected	KEYWORD2
 readPowerSupply	KEYWORD2
-getDS2413Count  KEYWORD2
-getStateByIndex KEYWORD2
-getStateByAddress KEYWORD2
-setStateByIndex KEYWORD2
-setStateByAddress KEYWORD2
+getDS2413Count	KEYWORD2
+getState	KEYWORD2
+getStateByAddress	KEYWORD2
+setState	KEYWORD2
+setStateByAddress	KEYWORD2
 
 #######################################
 # Constants (LITERAL1)
