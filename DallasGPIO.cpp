@@ -108,6 +108,11 @@ bool DallasGPIO::getAddress(uint8_t* deviceAddress, uint8_t index) {
     return false;
 }
 
+// check if last setState or getState was successful
+bool DallasGPIO::success() {
+    return !lastError;
+}
+
 // set GPIO0 and GPIO1 HIGH or LOW by index
 bool DallasGPIO::setState(uint8_t deviceIndex, uint8_t gpio0, uint8_t gpio1) {
 
@@ -124,7 +129,7 @@ bool DallasGPIO::setStateByAddress(const uint8_t* deviceAddress, uint8_t gpio0, 
 	static uint8_t state = 0;
 
     if (stage == 0) {
-		lastError = true;
+		lastError = false;
 		int b = _wire->reset();
 		if (b == 0) { lastError = true; stage=0; return true; } // fail
 		stage++;
@@ -180,7 +185,6 @@ bool DallasGPIO::setStateByAddress(const uint8_t* deviceAddress, uint8_t gpio0, 
 
     return stage == 0;
 }
-
 
 // get GPIO0 and GPIO1 HIGH or LOW by index
 bool DallasGPIO::getState(uint8_t deviceIndex, uint8_t* gpio0, uint8_t* gpio1) {

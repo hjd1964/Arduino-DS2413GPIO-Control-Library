@@ -56,6 +56,9 @@ public:
 	// finds an address at a given index on the bus
 	bool getAddress(uint8_t*, uint8_t);
 
+    // check if last setState or getState was successful
+    bool success();
+
 	// set GPIO0 and GPIO1 HIGH or LOW by index
 	bool setState(uint8_t deviceIndex, uint8_t gpio0, uint8_t gpio1);
 
