@@ -205,39 +205,49 @@ bool DallasGPIO::getStateByAddress(const uint8_t* deviceAddress, uint8_t* gpio0,
 		int b = _wire->reset();
 		if (b == 0) { lastError = true; stage=0; return true; } // fail
 		stage++;
-//		Serial.print("r");
+		//Serial.print("r");
 		if (polling) return false;
 	}
 	if (stage == 1) {
 		if (_wire->select(deviceAddress,polling)) stage++;
-//		if (stage == 2) Serial.print("s,");
+		//if (stage == 2) Serial.print("s,");
 		if (polling) return false;
 	}
 	if (stage == 2) {
 		_wire->write(DS2413_ACCESS_READ);
 		stage++;
-//		Serial.print("read,");
+		//Serial.print("read,");
 		if (polling) return false;
 	}
 	if (stage == 3) {
 		result = _wire->read();
 		stage++;
-//		Serial.print("r1:"); Serial.print(result,HEX); Serial.print(",");
+		//Serial.print("r1:"); Serial.print(result,HEX); Serial.print(",");
 		if (polling) return false;
 	}
 	if (stage == 4) {
 		int b = _wire->reset();
 		if (b == 0) { lastError = true; stage=0; return true; } // fail
 		stage++;
-//		Serial.print("r");
+		//Serial.print("r,");
 		if (polling) return false;
 	}
 	if (stage == 5) {
 		// check inverted nibble
-		if (((!result) & 0x0F) == (result >> 4)) {
-		  if (result & 1) *gpio0=LOW; else *gpio0=HIGH;
-		  if (result & 2) *gpio1=LOW; else *gpio1=HIGH;
-		} else lastError=true;
+		if (((~result) & 0x0F) == (result >> 4)) {
+		  if (!bitRead(result, 0)) *gpio0 = LOW; else *gpio0 = HIGH;
+		  if (!bitRead(result, 2)) *gpio1 = LOW; else *gpio1 = HIGH;
+          //Serial.print("got: "); Serial.print(*gpio0); Serial.print(*gpio1); Serial.println("");
+		} else {
+          lastError = true;
+        }
+
+        static uint8_t lastResult = 0;
+        if (result != lastResult) {
+          //Serial.print("result:"); Serial.print(result, BIN); Serial.println("");
+          lastResult = result;
+        }
+
 		stage++;
 		if (polling) return false;
 	}
