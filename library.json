@@ -1,11 +1,11 @@
 {
-  "name": "DallasTemperature",
-  "keywords": "onewire, 1-wire, bus, sensor, temperature",
-  "description": "Arduino Library for Dallas Temperature ICs (DS18B20, DS18S20, DS1822, DS1820)",
+  "name": "DallasGPIO",
+  "keywords": "onewire, 1-wire, bus, sensor, GPIO",
+  "description": "Arduino Library for Dallas GPIO IC (DS2413)",
   "repository":
   {
     "type": "git",
-    "url": "https://github.com/milesburton/Arduino-Temperature-Control-Library.git"
+    "url": "https://github.com/hjd1964/Arduino-DS2413GPIO-Control-Library.git"
   },
   "authors": 
   [
@@ -26,6 +26,10 @@
     {
       "name": "Rob Tillaart",
       "email": "rob.tillaart@gmail.com"
+    },
+    {
+      "name": "Howard Dutton",
+      "email": "hjd1964@gmail.com"
     }
   ],
   "dependencies":
@@ -34,7 +38,7 @@
     "authors": "Paul Stoffregen",
     "frameworks": "arduino"
   },
-  "version": "3.8.1",
+  "version": "1.0.0",
   "frameworks": "arduino",
   "platforms": "*"
 }
